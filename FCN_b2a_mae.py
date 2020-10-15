@@ -145,73 +145,21 @@ start_time = time.time()
 print ('model building...')
 
 model = Sequential()
-
-#model.add(Convolution1D(1, 257,  border_mode='same', bias=False, input_shape=(None,1)))
-
 model.add(Convolution1D(1, 35, border_mode='same', bias=False, input_shape=(None,1)))
-#model.add(BatchNormalization(mode=2,axis=-1))
-#model.add(LeakyReLU())
-
 model.add(Convolution1D(15, 35,  border_mode='same', bias=False))
 model.add(BatchNormalization(mode=2,axis=-1))
-
-#model.add(LeakyReLU())
-
 model.add(Convolution1D(15, 35,  border_mode='same', bias=False))
 model.add(BatchNormalization(mode=2,axis=-1))
-
-'''
-model.add(Convolution1D(30, 55,  border_mode='same'))
-model.add(BatchNormalization(mode=2,axis=-1))
-model.add(LeakyReLU())
-
-model.add(Convolution1D(15, 35,  border_mode='same'))
-model.add(BatchNormalization(mode=2,axis=-1))
-model.add(LeakyReLU())
-
-model.add(Convolution1D(30, 55,  border_mode='same'))
-model.add(BatchNormalization(mode=2,axis=-1))
-model.add(LeakyReLU())
-
-model.add(Convolution1D(30, 55,  border_mode='same'))
-model.add(BatchNormalization(mode=2,axis=-1))
-model.add(LeakyReLU())
-
-model.add(Convolution1D(30, 55,  border_mode='same'))
-model.add(BatchNormalization(mode=2,axis=-1))
-model.add(LeakyReLU())
-'''
 model.add(Convolution1D(1, 35,  border_mode='same', bias=False))
 model.add(Activation('tanh'))
 model.summary()
 #pdb.set_trace()
 model.compile(loss='mse', optimizer='adam')
     
-with open('FCN_b2a_V4.json','w') as f:    # save the model
+with open('FCN_b2a.json','w') as f:    # save the model
     f.write(model.to_json()) 
-checkpointer = ModelCheckpoint(filepath='FCN_b2a_V4.hdf5', verbose=1, save_best_only=True, mode='min')  
-#pdb.set_trace()
-'''
-layer_void = model.layers
-weights = layer_void[0].get_weights()
-#filter_out = layer_void[-2].get_weights()
-#print(weights[0][55//2])
-#weights[0][55//2] = 0   
+checkpointer = ModelCheckpoint(filepath='FCN_b2a.hdf5', verbose=1, save_best_only=True, mode='min')  
 
-#for layer in model.layers:
-    #print(layer.trainable)
-#layer_void[0].trainable = False
-#pdb.set_trace()
-#print(weights[0][(55//2)-18:(55//2)+18])
-weights[0][:] = 1/257
-weights[0][(257//2)-64:(257//2)+64] = 0
-#filter_out[0][(512//2)-128:(512//2)+128] = 0
-#weights[0][:] = 0
-#pdb.set_trace()
-#print(weights[0][(512//2)-128:(512//2)+128])
-layer_void[0].trainable = False
-#layer_void[-2].trainable = False
-'''
 print('training...')
 
 g1 = data_generator(Train_lists, Train_Air_paths, shuffle = "True")
@@ -240,7 +188,7 @@ hist=model.fit_generator(g1,
 tStart = time.time()
 
 print('load model')
-MdNamePath='FCN_b2a_V4' #the model path
+MdNamePath='FCN_b2a' #the model path
 with open(MdNamePath+'.json') as f:
     model = model_from_json(f.read());
         
@@ -275,8 +223,8 @@ for path in Test_Bone_lists: # Ex: /mnt/Nas/Corpus/TMHINT/Testing/Noisy/car_nois
         enhanced=enhanced.astype('float32')
         #    creatdir(os.path.join("Gaussian_noisy", noise, speaker, dB))
         #    librosa.output.write_wav(os.path.join("Gaussian_noisy", noise, speaker, dB, str(t)+"_"+wave_name), noisy, 16000)
-        creatdir(os.path.join("FCN_b2a_MAE_wav_V4", noise, speaker, dB))
-        librosa.output.write_wav(os.path.join("FCN_b2a_MAE_wav_V4", noise, speaker, dB, wave_name), enhanced, 16000)
+        creatdir(os.path.join("FCN_b2a_MAE_wav", noise, speaker, dB))
+        librosa.output.write_wav(os.path.join("FCN_b2a_MAE_wav", noise, speaker, dB, wave_name), enhanced, 16000)
 tEnd = time.time()
 print "It cost %f sec" % (tEnd - tStart)
 
@@ -294,7 +242,7 @@ plt.xlabel('epoch')
 plt.ylabel('error')
 plt.grid(True)
 plt.show()
-plt.savefig('FCN_b2a_mae_Learning_curve_V4.png', dpi=150)
+plt.savefig('FCN_b2a_mae_Learning_curve.png', dpi=150)
 
 
 end_time = time.time()
